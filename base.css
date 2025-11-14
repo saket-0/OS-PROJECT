@@ -1,0 +1,264 @@
+/* =================================================================== */
+/* === base.css ===                                                === */
+/* =================================================================== */
+/* Contains all fundamental styles: variables, resets, and           */
+/* the core page layout (header, sidebar, main content wrapper).       */
+/* You will rarely need to edit this file.                             */
+/* =================================================================== */
+
+/* --- Global Reset & Root Vars --- */
+:root {
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: 'Source Code Pro', monospace;
+    
+    --color-bg: #f4f7f6;
+    --color-panel: #ffffff;
+    --color-border: #dce4e1;
+    --color-text: #2c3e50;
+    --color-text-light: #5a6b7b;
+    
+    --color-primary: #3498db;
+    --color-primary-dark: #2980b9;
+    --color-primary-light: #eaf5fc;
+    
+    --color-green: #2ecc71;
+    --color-green-light: #eafaf1;
+    --color-red: #e74c3c;
+    --color-red-light: #fdedeb;
+    --color-yellow: #f1c40f;
+    --color-yellow-light: #fef9e7;
+    --color-purple: #9b59b6;
+    --color-purple-light: #f5eff8;
+    
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+body {
+    font-family: var(--font-sans);
+    color: var(--color-text);
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: var(--color-bg);
+}
+
+h1, h2, h3, h4 {
+    font-weight: 600;
+}
+
+/* --- New Layout Structure --- */
+
+.main-wrapper {
+    display: flex;
+    flex: 1; /* Make this wrapper fill the remaining height */
+    overflow: hidden; /* Prevent double scrollbars */
+}
+
+.sidebar {
+    width: 260px; /* Fixed width for the sidebar */
+    flex-shrink: 0;
+    background-color: var(--color-panel);
+    border-right: 1px solid var(--color-border);
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Allow sidebar to scroll if content is too tall */
+}
+
+.content-container {
+    flex: 1; /* Make the content area fill the remaining space */
+    overflow-y: auto; /* This is where the main scrolling happens */
+    padding: 30px 40px;
+}
+
+/* --- Header & Navigation (Redesigned) --- */
+.header {
+    background-color: var(--color-panel);
+    border-bottom: 1px solid var(--color-border);
+    padding: 20px 40px;
+    box-shadow: var(--shadow);
+    flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+h1 {
+    color: var(--color-text);
+    margin: 0;
+    font-size: 1.75rem;
+}
+
+.main-nav {
+    display: flex;
+    flex-direction: column; /* Stack nav buttons vertically */
+    gap: 8px; /* Space between buttons */
+}
+
+.nav-button {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    padding: 12px 16px; /* Adjusted padding */
+    border: 1px solid transparent; /* Cleaner look */
+    background-color: var(--color-panel);
+    color: var(--color-text-light);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%; /* Make buttons fill the sidebar */
+    text-align: left; /* Align text to the left */
+}
+.nav-button:hover {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary-dark);
+}
+.nav-button.active {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* --- Global Controls (Moved to Sidebar) --- */
+.global-controls {
+    display: flex;
+    flex-direction: column; /* Stack controls vertically */
+    align-items: flex-start; /* Align to the left */
+    gap: 12px;
+    margin-top: 30px; /* Space above */
+    padding-top: 20px; /* Space inside */
+    border-top: 1px dashed var(--color-border); /* Visual separator */
+    background-color: transparent; /* Remove old bg */
+    padding: 20px 0 0 0; /* Reset padding */
+    border: none;
+    border-top: 1px dashed var(--color-border);
+}
+.global-controls button {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    background-color: var(--color-yellow);
+    color: #333;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    width: 100%; /* Make button fill */
+}
+.global-controls button:hover {
+    background-color: #f3c912;
+}
+.global-controls button.paused {
+    background-color: var(--color-green);
+    color: white;
+}
+.global-controls button.paused:hover {
+    background-color: #34d27a;
+}
+.global-controls label {
+    font-weight: 500;
+    color: var(--color-text-light);
+}
+#global-speed-slider {
+    width: 100%; /* Make slider fill */
+    cursor: pointer;
+}
+#speed-label {
+    font-weight: 700;
+    font-family: var(--font-mono);
+    min-width: 30px;
+    display: inline-block;
+    text-align: right;
+    color: var(--color-primary-dark);
+}
+
+
+/* --- Responsive Adjustments (Layout Only) --- */
+
+/* For Tablet */
+@media (max-width: 900px) {
+    .main-wrapper {
+        flex-direction: column; /* Stack sidebar on top of content */
+        overflow: auto; /* Allow wrapper to scroll */
+    }
+    
+    .sidebar {
+        width: 100%; /* Sidebar becomes full width */
+        height: auto;
+        flex-direction: row; /* Lay out items in a row */
+        flex-wrap: wrap; /* Allow wrapping */
+        justify-content: center;
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+        padding: 15px;
+        box-sizing: border-box;
+    }
+
+    .main-nav {
+        flex-direction: row; /* Nav buttons in a row */
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .global-controls {
+        flex-direction: row; /* Controls in a row */
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px dashed var(--color-border);
+        width: 100%;
+    }
+
+    .content-container {
+        padding: 20px;
+        overflow-y: visible; /* Prevent nested scrollbar */
+    }
+
+    .header {
+        padding: 15px 20px;
+    }
+
+    h1 {
+        text-align: center;
+    }
+}
+
+
+/* For Mobile */
+@media (max-width: 768px) {
+    .header {
+        padding: 15px;
+    }
+    h1 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .sidebar {
+        padding: 15px;
+        flex-direction: column; /* Stack nav and controls */
+    }
+
+    .main-nav {
+        flex-direction: column; /* Stack nav buttons */
+        gap: 5px;
+    }
+
+    .global-controls {
+        flex-direction: column; /* Stack controls */
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+        padding-top: 20px;
+    }
+    
+    .content-container { 
+        padding: 20px 15px;
+    }
+}

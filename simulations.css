@@ -1,94 +1,12 @@
-/* --- Global Reset & Root Vars --- */
-:root {
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --font-mono: 'Source Code Pro', monospace;
-    
-    --color-bg: #f4f7f6;
-    --color-panel: #ffffff;
-    --color-border: #dce4e1;
-    --color-text: #2c3e50;
-    --color-text-light: #5a6b7b;
-    
-    --color-primary: #3498db;
-    --color-primary-dark: #2980b9;
-    --color-primary-light: #eaf5fc;
-    
-    --color-green: #2ecc71;
-    --color-green-light: #eafaf1;
-    --color-red: #e74c3c;
-    --color-red-light: #fdedeb;
-    --color-yellow: #f1c40f;
-    --color-yellow-light: #fef9e7;
-    --color-purple: #9b59b6;
-    --color-purple-light: #f5eff8;
-    
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
+/* =================================================================== */
+/* === simulations.css ===                                         === */
+/* =================================================================== */
+/* Contains all styles for specific simulation pages and components.   */
+/* This is the file you will edit most often to change UI.             */
+/* =================================================================== */
 
-body {
-    font-family: var(--font-sans);
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    margin: 0;
-    padding: 0;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-h1, h2, h3, h4 {
-    font-weight: 600;
-}
-
-/* --- Header & Navigation --- */
-.header {
-    background-color: var(--color-panel);
-    border-bottom: 1px solid var(--color-border);
-    padding: 20px 40px;
-    box-shadow: var(--shadow);
-}
-
-h1 {
-    text-align: center;
-    color: var(--color-text);
-    margin: 0 0 20px 0;
-}
-
-.main-nav {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.nav-button {
-    font-family: var(--font-sans);
-    font-size: 0.9375rem;
-    font-weight: 500;
-    padding: 10px 20px;
-    border: 1px solid var(--color-border);
-    background-color: var(--color-panel);
-    color: var(--color-text-light);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-.nav-button:hover {
-    background-color: var(--color-primary-light);
-    color: var(--color-primary-dark);
-}
-.nav-button.active {
-    background-color: var(--color-primary);
-    color: white;
-    border-color: var(--color-primary);
-}
 
 /* --- Main Content & Pages --- */
-.content-container {
-    max-width: 1400px;
-    margin: 30px auto;
-    padding: 0 40px;
-}
-
 .simulation-page {
     display: none;
     background-color: var(--color-panel);
@@ -96,6 +14,8 @@ h1 {
     border-radius: 12px;
     padding: 30px;
     box-shadow: var(--shadow);
+    /* Add a max-width to simulation pages for readability on wide screens */
+    max-width: 1400px; 
 }
 .simulation-page.active {
     display: block;
@@ -442,7 +362,7 @@ input:checked + .slider:before { transform: translateX(22px); }
     background-color: var(--color-yellow-light);
 }
 
-/* --- Responsive Adjustments --- */
+/* --- Responsive Adjustments (Component-Specific) --- */
 @media (max-width: 1200px) {
     .sim-container-dp {
         flex-direction: column;
@@ -452,11 +372,11 @@ input:checked + .slider:before { transform: translateX(22px); }
         box-sizing: border-box;
     }
 }
+
 @media (max-width: 768px) {
-    body { padding: 10px; }
-    .header { padding: 15px; }
-    .content-container { padding: 0 15px 15px 15px; margin-top: 20px; }
-    .simulation-page { padding: 20px; }
+    .simulation-page { 
+        padding: 20px; 
+    }
     
     .comparison-grid { grid-template-columns: 1fr; }
     .sim-container { flex-direction: column; }
@@ -481,56 +401,4 @@ input:checked + .slider:before { transform: translateX(22px); }
     #chopstick-2 { bottom: 50px; right: 100px; }
     #chopstick-3 { bottom: 50px; left: 100px; }
     #chopstick-4 { top: 15px; left: 80px; }
-}
-
-/* --- Global Simulation Controls --- */
-.global-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    margin-top: 20px;
-    background-color: var(--color-primary-light);
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid var(--color-border);
-}
-.global-controls button {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-    font-family: var(--font-sans);
-    font-weight: 500;
-    background-color: var(--color-yellow);
-    color: #333;
-    border: none;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-.global-controls button:hover {
-    background-color: #f3c912;
-}
-.global-controls button.paused {
-    background-color: var(--color-green);
-    color: white;
-}
-.global-controls button.paused:hover {
-    background-color: #34d27a;
-}
-.global-controls label {
-    font-weight: 500;
-    color: var(--color-text-light);
-}
-#global-speed-slider {
-    width: 150px;
-    cursor: pointer;
-    vertical-align: middle;
-}
-#speed-label {
-    font-weight: 700;
-    font-family: var(--font-mono);
-    min-width: 30px;
-    display: inline-block;
-    text-align: right;
-    color: var(--color-primary-dark);
 }

@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- Navigation ---
+    // --- Global Simulation Controls ---
 
     const pauseButton = document.getElementById('global-pause-resume');
     const speedSlider = document.getElementById('global-speed-slider');
@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
             speedLabel.textContent = parseFloat(speed).toFixed(1);
         });
     }
-    // --- END SNIPPET ---
+
+    // --- Page Navigation ---
 
     const navButtons = document.querySelectorAll('.nav-button');
     const pages = document.querySelectorAll('.simulation-page');
@@ -51,24 +52,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Initialize All Simulations ---
-    // We call the `init` function for each simulation from simulations.js
-    // This sets up their specific event listeners.
+    // --- Initialize All Simulations (Refactored) ---
+    // Now, we create the UI object and pass it to the init function.
     
     if (document.getElementById('producer-consumer-page')) {
-        initProducerConsumer();
+        const pcUI = new ProducerConsumerUI();
+        initProducerConsumer(pcUI);
     }
     
     if (document.getElementById('reader-writer-page')) {
-        initReaderWriter();
+        const rwUI = new ReaderWriterUI();
+        initReaderWriter(rwUI);
     }
     
     if (document.getElementById('dining-philosophers-page')) {
-        initDiningPhilosophers();
+        const dpUI = new DiningPhilosophersUI();
+        initDiningPhilosophers(dpUI);
     }
 
     if (document.getElementById('sleeping-barber-page')) {
-        initSleepingBarber();
+        const sbUI = new SleepingBarberUI();
+        initSleepingBarber(sbUI);
     }
 
 });

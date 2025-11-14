@@ -8,41 +8,46 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="simulations.css">
 </head>
 <body>
     <header class="header">
         <h1>Semaphore Simulation Suite</h1>
-
-        <div class="global-controls">
-            <button id="global-pause-resume" title="Pause/Resume">Pause</button>
-            <label for="global-speed-slider">Speed: <span id="speed-label">1.0</span>x</label>
-            <input type="range" id="global-speed-slider" min="0.1" max="3.0" value="1.0" step="0.1">
-        </div>
-        <nav class="main-nav">
-            <button class="nav-button active" data-page="intro">Mutex vs. Semaphore</button>
-            <button class="nav-button" data-page="producer-consumer">Producer-Consumer</button>
-            <button class="nav-button" data-page="reader-writer">Reader-Writer</button>
-            <button class="nav-button" data-page="dining-philosophers">Dining Philosophers</button>
-            <button class="nav-button" data-page="sleeping-barber">Sleeping Barber</button>
-        </nav>
     </header>
 
-    <main class="content-container">
+    <div class="main-wrapper">
+        <aside class="sidebar">
+            <nav class="main-nav">
+                <button class="nav-button active" data-page="intro">Mutex vs. Semaphore</button>
+                <button class="nav-button" data-page="producer-consumer">Producer-Consumer</button>
+                <button class="nav-button" data-page="reader-writer">Reader-Writer</button>
+                <button class="nav-button" data-page="dining-philosophers">Dining Philosophers</button>
+                <button class="nav-button" data-page="sleeping-barber">Sleeping Barber</button>
+            </nav>
 
-        <div id="intro-page" class="simulation-page active">
-            <h2>Mutex vs. Binary Semaphore</h2>
-            <p>A common point of confusion. While a binary semaphore (value 0 or 1) *can* be used for mutual exclusion, it has a key difference from a mutex.</p>
-            <div class="comparison-grid">
-                <div class="panel">
-                    <h3>Mutex (Mutual Exclusion)</h3>
-                    <p>Think of it as a **key to a room**.</p>
-                    <ul>
-                        <li>Only the process (thread) that **locked** (took) the key can **unlock** (return) it.</li>
-                        <li>It's about *ownership*. The locking thread owns the mutex until it's done.</li>
-                        <li>**Use Case:** Protecting a critical section of code from being run by two threads at once.</li>
-                    </ul>
-                    <div class="code-snippet">
+            <div class="global-controls">
+                <button id="global-pause-resume" title="Pause/Resume">Pause</button>
+                <label for="global-speed-slider">Speed: <span id="speed-label">1.0</span>x</label>
+                <input type="range" id="global-speed-slider" min="0.1" max="3.0" value="1.0" step="0.1">
+            </div>
+        </aside>
+
+        <main class="content-container">
+
+            <div id="intro-page" class="simulation-page active">
+                <h2>Mutex vs. Binary Semaphore</h2>
+                <p>A common point of confusion. While a binary semaphore (value 0 or 1) *can* be used for mutual exclusion, it has a key difference from a mutex.</p>
+                <div class="comparison-grid">
+                    <div class="panel">
+                        <h3>Mutex (Mutual Exclusion)</h3>
+                        <p>Think of it as a **key to a room**.</p>
+                        <ul>
+                            <li>Only the process (thread) that **locked** (took) the key can **unlock** (return) it.</li>
+                            <li>It's about *ownership*. The locking thread owns the mutex until it's done.</li>
+                            <li>**Use Case:** Protecting a critical section of code from being run by two threads at once.</li>
+                        </ul>
+                        <div class="code-snippet">
 <pre>
 thread_A() {
   lock(mutex);
@@ -50,17 +55,17 @@ thread_A() {
   unlock(mutex); // Must be Thread A
 }
 </pre>
+                        </div>
                     </div>
-                </div>
-                <div class="panel">
-                    <h3>Semaphore</h3>
-                    <p>Think of it as a **turnstile** or a set of **gate passes**.</p>
-                    <ul>
-                        <li>One process can **wait()** (decrement) and another process can **signal()** (increment).</li>
-                        <li>It's about *signaling* or managing resources. Ownership is not required.</li>
-                        <li>**Use Case:** Signaling between threads (like a producer signaling a consumer that an item is ready).</li>
-                    </ul>
-                    <div class="code-snippet">
+                    <div class="panel">
+                        <h3>Semaphore</h3>
+                        <p>Think of it as a **turnstile** or a set of **gate passes**.</p>
+                        <ul>
+                            <li>One process can **wait()** (decrement) and another process can **signal()** (increment).</li>
+                            <li>It's about *signaling* or managing resources. Ownership is not required.</li>
+                            <li>**Use Case:** Signaling between threads (like a producer signaling a consumer that an item is ready).</li>
+                        </ul>
+                        <div class="code-snippet">
 <pre>
 producer() {
   // Produce item
@@ -72,163 +77,165 @@ consumer() {
   // Consume item
 }
 </pre>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="producer-consumer-page" class="simulation-page">
-            <h2>Producer-Consumer (Bounded Buffer)</h2>
-            <div class="sim-controls">
-                <button id="pc-add-producer">Add Producer</button>
-                <button id="pc-add-consumer">Add Consumer</button>
-                <button id="pc-remove-producer">Remove Producer</button>
-                <button id="pc-remove-consumer">Remove Consumer</button>
-            </div>
-            <div class="sim-container">
-                <div class="resource-area">
-                    <h3>Bounded Buffer (Size: 8)</h3>
-                    <div id="pc-buffer" class="buffer">
-                        <div class="buffer-slot"></div>
-                        <div class="buffer-slot"></div>
-                        <div class="buffer-slot"></div>
-                        <div class="buffer-slot"></div>
-                        <div class="buffer-slot"></div>
-                        <div class="buffer-slot"></div>
-                        <div class="buffer-slot"></div>
-                        <div class="buffer-slot"></div>
-                    </div>
-                    <div class="semaphore-grid">
-                        <div class="sem-display"><strong>empty</strong> (Empty Slots): <span id="sem-empty">8</span></div>
-                        <div class="sem-display"><strong>full</strong> (Full Slots): <span id="sem-full">0</span></div>
-                        <div class="sem-display"><strong>mutex</strong> (Access): <span id="sem-mutex">1</span></div>
-                    </div>
-                </div>
-                <div class="actor-area">
-                    <h3>Producers (<span id="pc-producer-count">0</span>)</h3>
-                    <div id="pc-producer-queue" class="actor-queue"></div>
-                    <h3>Consumers (<span id="pc-consumer-count">0</span>)</h3>
-                    <div id="pc-consumer-queue" class="actor-queue"></div>
-                </div>
-                <div class="log-area">
-                    <h3>Activity Log</h3>
-                    <div id="pc-log" class="log-box"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="reader-writer-page" class="simulation-page">
-            <h2>Reader-Writer Problem (Reader Priority)</h2>
-            <div class="sim-controls">
-                <button id="rw-add-reader">Add Reader</button>
-                <button id="rw-add-writer">Add Writer</button>
-            </div>
-            <div class="sim-container-rw">
-                <div class="actor-area-rw">
-                    <h3>Waiting Queue</h3>
-                    <div id="rw-queue" class="actor-queue-rw"></div>
-                </div>
-                <div class="resource-area-rw">
-                    <h3>Shared Resource</h3>
-                    <div id="rw-resource" class="resource-box">
-                        <span>EMPTY</span>
-                    </div>
-                    <div class="semaphore-grid">
-                        <div class="sem-display"><strong>wrt</strong> (Access): <span id="rw-sem-wrt">1</span></div>
-                        <div class="sem-display"><strong>readCount</strong>: <span id="rw-sem-rc">0</span></div>
-                    </div>
-                </div>
-                <div class="log-area">
-                    <h3>Activity Log</h3>
-                    <div id="rw-log" class="log-box"></div>
-                </div>
-            </div>
-        </div>
-        
-        <div id="dining-philosophers-page" class="simulation-page">
-            <h2>Dining Philosophers Problem</h2>
-            <div class="sim-controls">
-                <button id="dp-start">Start</button>
-                <button id="dp-stop">Stop</button>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="dp-solution-toggle">
-                    <span class="slider"></span>
-                </label>
-                <span>Apply Deadlock Solution (Asymmetric)</span>
-            </div>
-            <div class="sim-container-dp">
-                <div class="philosopher-table">
-                    <div class="chopstick" id="chopstick-0"></div>
-                    <div class="chopstick" id="chopstick-1"></div>
-                    <div class="chopstick" id="chopstick-2"></div>
-                    <div class="chopstick" id="chopstick-3"></div>
-                    <div class="chopstick" id="chopstick-4"></div>
-                    
-                    <div class="philosopher" id="philosopher-0">
-                        <span>P0</span>
-                        <div class="status">Thinking</div>
-                    </div>
-                    <div class="philosopher" id="philosopher-1">
-                        <span>P1</span>
-                        <div class="status">Thinking</div>
-                    </div>
-                    <div class="philosopher" id="philosopher-2">
-                        <span>P2</span>
-                        <div class="status">Thinking</div>
-                    </div>
-                    <div class="philosopher" id="philosopher-3">
-                        <span>P3</span>
-                        <div class="status">Thinking</div>
-                    </div>
-                    <div class="philosopher" id="philosopher-4">
-                        <span>P4</span>
-                        <div class="status">Thinking</div>
-                    </div>
-                </div>
-                <div class="log-area-dp">
-                    <h3>Activity Log</h3>
-                    <div id="dp-log" class="log-box"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="sleeping-barber-page" class="simulation-page">
-            <h2>Sleeping Barber Problem</h2>
-            <div class="sim-controls">
-                <button id="sb-add-customer">Add Customer</button>
-            </div>
-            <div class="sim-container-sb">
-                <div class="barber-shop">
-                    <div class="barber-area">
-                        <h3>Barber</h3>
-                        <div id="sb-barber" class="barber-status sleeping">Zzz...</div>
-                        <h3>Barber Chair</h3>
-                        <div id="sb-barber-chair" class="chair">Empty</div>
-                    </div>
-                    <div class="waiting-area">
-                        <h3>Waiting Room (Chairs: 5)</h3>
-                        <div id="sb-waiting-room" class="buffer">
-                            <div class="chair"></div>
-                            <div class="chair"></div>
-                            <div class="chair"></div>
-                            <div class="chair"></div>
-                            <div class="chair"></div>
                         </div>
                     </div>
                 </div>
-                <div class="queue-area-sb">
-                    <h3>Customers Outside</h3>
-                    <div id="sb-queue" class="actor-queue"></div>
+            </div>
+
+            <div id="producer-consumer-page" class="simulation-page">
+                <h2>Producer-Consumer (Bounded Buffer)</h2>
+                <div class="sim-controls">
+                    <button id="pc-add-producer">Add Producer</button>
+                    <button id="pc-add-consumer">Add Consumer</button>
+                    <button id="pc-remove-producer">Remove Producer</button>
+                    <button id="pc-remove-consumer">Remove Consumer</button>
                 </div>
-                <div class="log-area">
-                    <h3>Activity Log</h3>
-                    <div id="sb-log" class="log-box"></div>
+                <div class="sim-container">
+                    <div class="resource-area">
+                        <h3>Bounded Buffer (Size: 8)</h3>
+                        <div id="pc-buffer" class="buffer">
+                            <div class="buffer-slot"></div>
+                            <div class="buffer-slot"></div>
+                            <div class="buffer-slot"></div>
+                            <div class="buffer-slot"></div>
+                            <div class="buffer-slot"></div>
+                            <div class="buffer-slot"></div>
+                            <div class="buffer-slot"></div>
+                            <div class="buffer-slot"></div>
+                        </div>
+                        <div class="semaphore-grid">
+                            <div class="sem-display"><strong>empty</strong> (Empty Slots): <span id="sem-empty">8</span></div>
+                            <div class="sem-display"><strong>full</strong> (Full Slots): <span id="sem-full">0</span></div>
+                            <div class="sem-display"><strong>mutex</strong> (Access): <span id="sem-mutex">1</span></div>
+                        </div>
+                    </div>
+                    <div class="actor-area">
+                        <h3>Producers (<span id="pc-producer-count">0</span>)</h3>
+                        <div id="pc-producer-queue" class="actor-queue"></div>
+                        <h3>Consumers (<span id="pc-consumer-count">0</span>)</h3>
+                        <div id="pc-consumer-queue" class="actor-queue"></div>
+                    </div>
+                    <div class="log-area">
+                        <h3>Activity Log</h3>
+                        <div id="pc-log" class="log-box"></div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-    </main>
+            <div id="reader-writer-page" class="simulation-page">
+                <h2>Reader-Writer Problem (Reader Priority)</h2>
+                <div class="sim-controls">
+                    <button id="rw-add-reader">Add Reader</button>
+                    <button id="rw-add-writer">Add Writer</button>
+                </div>
+                <div class="sim-container-rw">
+                    <div class="actor-area-rw">
+                        <h3>Waiting Queue</h3>
+                        <div id="rw-queue" class="actor-queue-rw"></div>
+                    </div>
+                    <div class="resource-area-rw">
+                        <h3>Shared Resource</h3>
+                        <div id="rw-resource" class="resource-box">
+                            <span>EMPTY</span>
+                        </div>
+                        <div class="semaphore-grid">
+                            <div class="sem-display"><strong>wrt</strong> (Access): <span id="rw-sem-wrt">1</span></div>
+                            <div class="sem-display"><strong>readCount</strong>: <span id="rw-sem-rc">0</span></div>
+                        </div>
+                    </div>
+                    <div class="log-area">
+                        <h3>Activity Log</h3>
+                        <div id="rw-log" class="log-box"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="dining-philosophers-page" class="simulation-page">
+                <h2>Dining Philosophers Problem</h2>
+                <div class="sim-controls">
+                    <button id="dp-start">Start</button>
+                    <button id="dp-stop">Stop</button>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="dp-solution-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span>Apply Deadlock Solution (Asymmetric)</span>
+                </div>
+                <div class="sim-container-dp">
+                    <div class="philosopher-table">
+                        <div class="chopstick" id="chopstick-0"></div>
+                        <div class="chopstick" id="chopstick-1"></div>
+                        <div class="chopstick" id="chopstick-2"></div>
+                        <div class="chopstick" id="chopstick-3"></div>
+                        <div class="chopstick" id="chopstick-4"></div>
+                        
+                        <div class="philosopher" id="philosopher-0">
+                            <span>P0</span>
+                            <div class="status">Thinking</div>
+                        </div>
+                        <div class="philosopher" id="philosopher-1">
+                            <span>P1</span>
+                            <div class="status">Thinking</div>
+                        </div>
+                        <div class="philosopher" id="philosopher-2">
+                            <span>P2</span>
+                            <div class="status">Thinking</div>
+                        </div>
+                        <div class="philosopher" id="philosopher-3">
+                            <span>P3</span>
+                            <div class="status">Thinking</div>
+                        </div>
+                        <div class="philosopher" id="philosopher-4">
+                            <span>P4</span>
+                            <div class="status">Thinking</div>
+                        </div>
+                    </div>
+                    <div class="log-area-dp">
+                        <h3>Activity Log</h3>
+                        <div id="dp-log" class="log-box"></div>
+                    </div>
+                </div>
+            </div>
 
+            <div id="sleeping-barber-page" class="simulation-page">
+                <h2>Sleeping Barber Problem</h2>
+                <div class="sim-controls">
+                    <button id="sb-add-customer">Add Customer</button>
+                </div>
+                <div class="sim-container-sb">
+                    <div class="barber-shop">
+                        <div class="barber-area">
+                            <h3>Barber</h3>
+                            <div id="sb-barber" class="barber-status sleeping">Zzz...</div>
+                            <h3>Barber Chair</h3>
+                            <div id="sb-barber-chair" class="chair">Empty</div>
+                        </div>
+                        <div class="waiting-area">
+                            <h3>Waiting Room (Chairs: 5)</h3>
+                            <div id="sb-waiting-room" class="buffer">
+                                <div class="chair"></div>
+                                <div class="chair"></div>
+                                <div class="chair"></div>
+                                <div class="chair"></div>
+                                <div class="chair"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="queue-area-sb">
+                        <h3>Customers Outside</h3>
+                        <div id="sb-queue" class="actor-queue"></div>
+                    </div>
+                    <div class="log-area">
+                        <h3>Activity Log</h3>
+                        <div id="sb-log" class="log-box"></div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="js/ui.js"></script>
     <script src="js/simulations.js"></script>
     <script src="js/main.js"></script>
 </body>
