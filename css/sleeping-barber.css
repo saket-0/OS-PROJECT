@@ -41,8 +41,7 @@
     flex-shrink: 0; /* Don't shrink barber area */
 }
 .waiting-area { 
-    /* UPDATED: This area fills the remaining space */
-    flex: 1;
+    /* This area NO LONGER fills remaining space */
     display: flex;
     flex-direction: column;
     min-height: 0; /* Flexbox fix */
@@ -51,10 +50,23 @@
     margin-bottom: 12px;
     flex-shrink: 0;
 }
+
+/* === UPDATED: Waiting Room Layout === */
 #sb-waiting-room {
-    /* This is an .actor-queue, so it will grow to fill .waiting-area */
-    flex: 1;
+    /* Override .actor-queue styles */
+    display: flex;
+    flex-direction: row; /* Lay out chairs horizontally */
+    flex-wrap: nowrap;      /* MODIFIED: Force chairs into a single line */
+    gap: 8px;             /* MODIFIED: Slightly smaller gap */
+    justify-content: center; /* Center the row of chairs */
+    
+    /* Remove old stretching and overflow rules */
+    flex: none; 
+    overflow-y: visible; 
+    min-height: auto;
 }
+/* === END UPDATE === */
+
 
 /* --- Barber Status & Chairs --- */
 .barber-status {
@@ -80,6 +92,8 @@
     border: 2px solid var(--color-green);
     color: var(--color-green);
 }
+
+/* This is the default chair style */
 .chair {
     height: 40px;
     background-color: #fff;
@@ -97,6 +111,16 @@
     height: 50px; 
     font-weight: 600; 
 }
+
+/* === MODIFIED: Specific rule for small square chairs === */
+.waiting-area .chair {
+    width: 40px;  /* MODIFIED: Made smaller */
+    height: 40px; /* MODIFIED: Made smaller */
+    margin-bottom: 0; /* Remove old margin, use gap instead */
+}
+/* === END MODIFICATION === */
+
+
 #sb-barber-chair.filled, .waiting-area .chair.filled {
     background-color: var(--color-yellow-light);
     border-color: var(--color-yellow);
@@ -117,7 +141,8 @@
     }
     .barber-shop {
         /* Give it a reasonable height when stacked */
-        height: 500px;
+        height: auto; /* Let it size to content */
+        min-height: 300px;
     }
 }
 @media (max-width: 768px) {

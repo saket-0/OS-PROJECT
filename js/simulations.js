@@ -540,7 +540,13 @@ function initSleepingBarber(ui) {
         customerQueue.push(customer);
         updateFullUI();
         
-        await smartWait(() => mutex > 0, ui, `C${customer.id}: Waiting for mutex`, 'log-customer');
+        // --- START OF MODIFIED CODE ---
+        // Force the customer to wait outside so we can see them in the queue
+        ui.log(`C${customer.id}: Is waiting outside.`, 'log-customer');
+        await sleep(2000); // Wait 2 seconds (will be adjusted by speed slider)
+        // --- END OF MODIFIED CODE ---
+        
+        await smartWait(() => mutex > 0, ui, `C${customer.id}: Checking waiting room...`, 'log-customer');
         mutex--;
         
         if (waitingRoom.length < MAX_CHAIRS) {
