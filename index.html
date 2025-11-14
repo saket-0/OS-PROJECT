@@ -91,6 +91,12 @@ consumer() {
                     <button id="pc-remove-consumer">Remove Consumer</button>
                 </div>
                 <div class="sim-container">
+                    <div class="actor-area">
+                        <h3>Producers (<span id="pc-producer-count">0</span>)</h3>
+                        <div id="pc-producer-queue" class="actor-queue"></div>
+                        <h3>Consumers (<span id="pc-consumer-count">0</span>)</h3>
+                        <div id="pc-consumer-queue" class="actor-queue"></div>
+                    </div>
                     <div class="resource-area">
                         <h3>Bounded Buffer (Size: 8)</h3>
                         <div id="pc-buffer" class="buffer">
@@ -108,12 +114,6 @@ consumer() {
                             <div class="sem-display"><strong>full</strong> (Full Slots): <span id="sem-full">0</span></div>
                             <div class="sem-display"><strong>mutex</strong> (Access): <span id="sem-mutex">1</span></div>
                         </div>
-                    </div>
-                    <div class="actor-area">
-                        <h3>Producers (<span id="pc-producer-count">0</span>)</h3>
-                        <div id="pc-producer-queue" class="actor-queue"></div>
-                        <h3>Consumers (<span id="pc-consumer-count">0</span>)</h3>
-                        <div id="pc-consumer-queue" class="actor-queue"></div>
                     </div>
                     <div class="log-area">
                         <h3>Activity Log</h3>
@@ -203,6 +203,10 @@ consumer() {
                     <button id="sb-add-customer">Add Customer</button>
                 </div>
                 <div class="sim-container-sb">
+                    <div class="queue-area-sb">
+                        <h3>Customers Outside</h3>
+                        <div id="sb-queue" class="actor-queue"></div>
+                    </div>
                     <div class="barber-shop">
                         <div class="barber-area">
                             <h3>Barber</h3>
@@ -220,10 +224,6 @@ consumer() {
                                 <div class="chair"></div>
                             </div>
                         </div>
-                    </div>
-                    <div class="queue-area-sb">
-                        <h3>Customers Outside</h3>
-                        <div id="sb-queue" class="actor-queue"></div>
                     </div>
                     <div class="log-area">
                         <h3>Activity Log</h3>

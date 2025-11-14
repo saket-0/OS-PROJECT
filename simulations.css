@@ -60,7 +60,8 @@
     margin-top: 0;
 }
 .log-box {
-    height: 300px;
+    /* UPDATED: Increased log box height for better visibility */
+    height: 450px;
     background-color: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 8px;
@@ -113,17 +114,21 @@
 
 /* --- Page 2: Producer-Consumer --- */
 .sim-container {
-    display: flex;
-    flex-wrap: wrap;
+    /* UPDATED: Converted to a 3-column grid */
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1.5fr;
     gap: 24px;
+    align-items: start;
 }
 .resource-area {
-    flex-basis: 500px;
-    flex-grow: 2;
+    /* Flex properties are no longer needed */
+    flex-basis: auto;
+    flex-grow: 0;
 }
 .actor-area {
-    flex-basis: 300px;
-    flex-grow: 1;
+    /* Flex properties are no longer needed */
+    flex-basis: auto;
+    flex-grow: 0;
 }
 .buffer {
     display: flex;
@@ -146,7 +151,12 @@
     border-color: var(--color-green);
 }
 .actor-queue {
-    min-height: 50px;
+    /* UPDATED: Gave queues a larger min-height */
+    min-height: 180px;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    padding: 10px;
+    border-radius: 8px;
 }
 .actor {
     padding: 5px 10px;
@@ -183,19 +193,24 @@
 
 /* --- Page 3: Reader-Writer --- */
 .sim-container-rw {
+    /* UPDATED: Converted to a 3-column grid to include the log */
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1.5fr;
     gap: 24px;
+    align-items: start;
 }
 .actor-queue-rw {
-    min-height: 300px;
+    /* UPDATED: Set explicit height to match log box */
+    height: 450px;
     background-color: var(--color-bg);
     border: 1px solid var(--color-border);
     padding: 10px;
     border-radius: 8px;
+    overflow-y: auto;
 }
 .resource-box {
-    height: 300px;
+    /* UPDATED: Set explicit height to match log box */
+    height: 450px;
     border: 2px dashed var(--color-border);
     border-radius: 8px;
     display: flex;
@@ -217,6 +232,7 @@
     width: 90%;
     text-align: center;
     transition: all 0.3s ease;
+    flex-shrink: 0; /* Prevent shrinking */
 }
 .actor.reader { background-color: var(--color-primary-light); color: var(--color-primary-dark); }
 .actor.writer { background-color: var(--color-red-light); color: var(--color-red); }
@@ -225,6 +241,7 @@
 .sim-container-dp {
     display: flex;
     gap: 24px;
+    align-items: start;
 }
 .philosopher-table {
     position: relative;
@@ -233,6 +250,7 @@
     border: 2px solid var(--color-border);
     border-radius: 50%;
     margin: 40px auto;
+    flex-shrink: 0; /* Prevent table from shrinking */
 }
 .philosopher {
     position: absolute;
@@ -265,17 +283,21 @@
 .chopstick.taken {
     background-color: var(--color-primary);
 }
-/* Positioning Philosophers & Chopsticks */
+/* - UPDATED: Recalculated all chopstick positions for proper alignment 
+  - between philosophers.
+  */
 #philosopher-0 { top: -40px; left: 160px; }
 #philosopher-1 { top: 70px; right: -20px; }
 #philosopher-2 { bottom: -10px; right: 40px; }
 #philosopher-3 { bottom: -10px; left: 40px; }
 #philosopher-4 { top: 70px; left: -20px; }
-#chopstick-0 { top: 20px; left: 260px; transform: rotate(36deg); }
-#chopstick-1 { top: 170px; right: 20px; transform: rotate(108deg); }
-#chopstick-2 { bottom: 70px; right: 130px; transform: rotate(180deg); }
-#chopstick-3 { bottom: 70px; left: 130px; transform: rotate(252deg); }
-#chopstick-4 { top: 20px; left: 110px; transform: rotate(324deg); }
+
+#chopstick-0 { top: 60px; left: 275px; transform: rotate(36deg); }
+#chopstick-1 { top: 220px; left: 330px; transform: rotate(108deg); }
+#chopstick-2 { top: 330px; left: 192px; transform: rotate(180deg); }
+#chopstick-3 { top: 220px; left: 65px; transform: rotate(252deg); }
+#chopstick-4 { top: 60px; left: 110px; transform: rotate(324deg); }
+
 
 /* --- Toggle Switch --- */
 .toggle-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
@@ -293,20 +315,28 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 /* --- Page 5: Sleeping Barber --- */
 .sim-container-sb {
-    display: flex;
-    flex-wrap: wrap;
+    /* UPDATED: Converted to a 3-column grid */
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1.5fr;
     gap: 24px;
+    align-items: start;
 }
 .barber-shop {
-    flex: 2;
+    /* UPDATED: Set height and direction to fill grid cell */
+    height: 450px;
     display: flex;
+    flex-direction: column;
     gap: 24px;
     border: 1px solid var(--color-border);
     padding: 20px;
     border-radius: 8px;
 }
 .barber-area { text-align: center; }
-.waiting-area { flex: 1; }
+.waiting-area { 
+    flex: 1; /* Allow waiting area to fill space */
+    display: flex;
+    flex-direction: column;
+}
 .queue-area-sb { flex: 1; }
 .barber-status {
     width: 100px;
@@ -319,6 +349,7 @@ input:checked + .slider:before { transform: translateX(22px); }
     font-weight: 600;
     font-size: 1.2rem;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 .barber-status.sleeping {
     background-color: var(--color-primary-light);
@@ -341,18 +372,27 @@ input:checked + .slider:before { transform: translateX(22px); }
     justify-content: center;
     font-size: 0.9rem;
     font-weight: 500;
+    flex-shrink: 0; /* Prevent chairs from shrinking */
 }
 #sb-barber-chair { height: 50px; font-weight: 600; }
 #sb-barber-chair.filled, .waiting-area .chair.filled {
     background-color: var(--color-yellow-light);
     border-color: var(--color-yellow);
 }
+/* UPDATED: Set height to match grid cell and allow scrolling */
 #sb-queue {
-    min-height: 200px;
+    height: 450px;
+    overflow-y: auto;
     background-color: var(--color-bg);
     border: 1px solid var(--color-border);
     padding: 10px;
     border-radius: 8px;
+}
+#sb-waiting-room {
+    /* UPDATED: Make chairs fill the waiting area */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 .customer {
     padding: 5px 10px;
@@ -364,12 +404,29 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 /* --- Responsive Adjustments (Component-Specific) --- */
 @media (max-width: 1200px) {
+    /* UPDATED: Convert grids back to columns for mid-sized screens */
+    .sim-container,
+    .sim-container-rw,
+    .sim-container-sb {
+        grid-template-columns: 1fr;
+    }
     .sim-container-dp {
         flex-direction: column;
     }
     .log-area-dp {
         width: 100%;
         box-sizing: border-box;
+    }
+    /* UPDATED: Reset heights on column snap */
+    .actor-queue-rw,
+    .resource-box,
+    #sb-queue,
+    .barber-shop {
+        height: auto;
+        min-height: 300px;
+    }
+    .log-box {
+        height: 300px; /* Revert to smaller log on smaller screens */
     }
 }
 
@@ -391,14 +448,16 @@ input:checked + .slider:before { transform: translateX(22px); }
     .philosopher { width: 60px; height: 60px; }
     .chopstick { width: 10px; height: 40px; }
     
+    /* UPDATED: Responsive philosopher/chopstick positions */
     #philosopher-0 { top: -30px; left: 120px; }
     #philosopher-1 { top: 50px; right: -15px; }
     #philosopher-2 { bottom: -5px; right: 30px; }
     #philosopher-3 { bottom: -5px; left: 30px; }
     #philosopher-4 { top: 50px; left: -15px; }
-    #chopstick-0 { top: 15px; left: 200px; }
-    #chopstick-1 { top: 130px; right: 15px; }
-    #chopstick-2 { bottom: 50px; right: 100px; }
-    #chopstick-3 { bottom: 50px; left: 100px; }
-    #chopstick-4 { top: 15px; left: 80px; }
+
+    #chopstick-0 { top: 40px; left: 205px; transform: rotate(36deg); }
+    #chopstick-1 { top: 165px; left: 245px; transform: rotate(108deg); }
+    #chopstick-2 { top: 250px; left: 145px; transform: rotate(180deg); }
+    #chopstick-3 { top: 165px; left: 45px; transform: rotate(252deg); }
+    #chopstick-4 { top: 40px; left: 80px; transform: rotate(324deg); }
 }
