@@ -482,3 +482,55 @@ input:checked + .slider:before { transform: translateX(22px); }
     #chopstick-3 { bottom: 50px; left: 100px; }
     #chopstick-4 { top: 15px; left: 80px; }
 }
+
+/* --- Global Simulation Controls --- */
+.global-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+    background-color: var(--color-primary-light);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+}
+.global-controls button {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    background-color: var(--color-yellow);
+    color: #333;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+.global-controls button:hover {
+    background-color: #f3c912;
+}
+.global-controls button.paused {
+    background-color: var(--color-green);
+    color: white;
+}
+.global-controls button.paused:hover {
+    background-color: #34d27a;
+}
+.global-controls label {
+    font-weight: 500;
+    color: var(--color-text-light);
+}
+#global-speed-slider {
+    width: 150px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+#speed-label {
+    font-weight: 700;
+    font-family: var(--font-mono);
+    min-width: 30px;
+    display: inline-block;
+    text-align: right;
+    color: var(--color-primary-dark);
+}

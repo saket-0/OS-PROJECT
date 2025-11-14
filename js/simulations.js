@@ -1,4 +1,67 @@
-// --- Utility Function ---
+// --- Global Simulation State ---
+// We define this globally so main.js can access it
+const simState = {
+    speed: 1.0, // 1.0 = normal, 0.5 = half speed, 2.0 = double speed
+    isPaused: false,
+    _pauseResolver: null, // Internal promise resolver
+};
+
+// --- Global Controls (to be called from main.js) ---
+function setSimulationSpeed(speed) {
+    simState.speed = parseFloat(speed);
+}
+
+function togglePauseSimulation() {
+    simState.isPaused = !simState.isPaused;
+    if (!simState.isPaused && simState._pauseResolver) {
+        // Resume the simulation
+        simState._pauseResolver();
+        simState._pauseResolver = null;
+    }
+}
+
+// --- Utility Functions (Enhanced) ---
+
+// A new function that all async logic will check
+async function checkPause() {
+    if (simState.isPaused) {
+        await new Promise(resolve => {
+            simState._pauseResolver = resolve;
+        });
+    }
+}
+
+// Enhanced sleep function that respects pause and speed
+async function sleep(ms) {
+    await checkPause(); // Check if paused before sleeping
+    const adjustedTime = ms / simState.speed;
+    await new Promise(resolve => setTimeout(resolve, adjustedTime));
+    await checkPause(); // Check if paused after sleeping
+}
+
+/**
+ * A new "smart" wait function that replaces busy-waiting loops.
+ * It respects pause/speed and logs the waiting action.
+ * @param {function} conditionCheck - A function that returns true when waiting is done.
+ * @param {HTMLElement} logBox - The log box to print messages to.
+ * @param {string} logMessageText - The message to log while waiting.
+ * @param {string} logType - The CSS class for the log message.
+ */
+async function smartWait(conditionCheck, logBox, logMessageText, logType) {
+    if (conditionCheck()) {
+         // Condition is already met, no need to wait
+         return;
+    }
+    
+    logMessage(logBox, logMessageText, logType);
+    while (!conditionCheck()) {
+        await checkPause();
+        // Check the condition periodically, adjusted for speed
+        await new Promise(resolve => setTimeout(resolve, 50 / simState.speed));
+    }
+}
+
+// --- Utility Function (Original) ---
 function logMessage(logBox, message, type = 'log-system') {
     const logEntry = document.createElement('div');
     logEntry.textContent = message;
@@ -7,11 +70,9 @@ function logMessage(logBox, message, type = 'log-system') {
     logBox.scrollTop = logBox.scrollHeight;
 }
 
-// Utility to create a delay
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 // ===================================================================
-// === 1. PRODUCER-CONSUMER SIMULATION ===============================
+// === 1. PRODUCER-CONSUMER SIMULATION (Refactored) ==================
 // ===================================================================
 function initProducerConsumer() {
     const bufferSlots = document.querySelectorAll('#pc-buffer .buffer-slot');
@@ -56,20 +117,26 @@ function initProducerConsumer() {
         return actorEl;
     }
 
-    // --- Semaphore Operations ---
-    async function wait(sem) {
-        while (window[sem] <= 0) {
-            await sleep(200); // Wait until sem is > 0
-        }
+    // --- Semaphore Operations (Refactored) ---
+    async function wait(sem, actorId, semName) {
+        const logType = (semName === 'empty' || semName === 'mutex') ? 'log-producer' : 'log-consumer';
+        const friendlyName = `${actorId} (${semName === 'mutex' ? 'on mutex' : ''})`;
+        
+        await smartWait(() => window[sem] > 0, 
+            logBox, 
+            `${friendlyName}: Waiting for '${semName}' (Value: ${window[sem]})`, 
+            logType
+        );
         window[sem]--;
         updateSemaphores();
     }
+    
     function signal(sem) {
         window[sem]++;
         updateSemaphores();
     }
 
-    // --- Actor Logic ---
+    // --- Actor Logic (Refactored) ---
     async function producerLogic(id, actorEl) {
         while (true) {
             try {
@@ -78,11 +145,9 @@ function initProducerConsumer() {
                 await sleep(2000 + Math.random() * 3000); // Sleep
                 
                 actorEl.classList.add('waiting');
-                logMessage(logBox, `P${id}: Waiting for empty slot`, 'log-producer');
-                await wait('empty'); // Wait for empty slot
-                
-                logMessage(logBox, `P${id}: Waiting for mutex`, 'log-producer');
-                await wait('mutex'); // Lock mutex
+                // Use new wait function
+                await wait('empty', `P${id}`, 'empty');
+                await wait('mutex', `P${id}`, 'mutex');
                 
                 // --- Critical Section ---
                 logMessage(logBox, `P${id}: Locking mutex & producing...`, 'log-producer');
@@ -91,7 +156,7 @@ function initProducerConsumer() {
                     buffer[index] = `Item ${id}`;
                     updateBuffer();
                 }
-                await sleep(500);
+                await sleep(500); // Use enhanced sleep
                 // --- End Critical Section ---
                 
                 logMessage(logBox, `P${id}: Releasing mutex`, 'log-producer');
@@ -109,11 +174,9 @@ function initProducerConsumer() {
                 await sleep(2000 + Math.random() * 4000); // Sleep
                 
                 actorEl.classList.add('waiting');
-                logMessage(logBox, `C${id}: Waiting for full slot`, 'log-consumer');
-                await wait('full'); // Wait for full slot
-                
-                logMessage(logBox, `C${id}: Waiting for mutex`, 'log-consumer');
-                await wait('mutex'); // Lock mutex
+                // Use new wait function
+                await wait('full', `C${id}`, 'full');
+                await wait('mutex', `C${id}`, 'mutex');
                 
                 // --- Critical Section ---
                 logMessage(logBox, `C${id}: Locking mutex & consuming...`, 'log-consumer');
@@ -122,7 +185,7 @@ function initProducerConsumer() {
                     buffer[index] = null;
                     updateBuffer();
                 }
-                await sleep(500);
+                await sleep(500); // Use enhanced sleep
                 // --- End Critical Section ---
                 
                 logMessage(logBox, `C${id}: Releasing mutex`, 'log-consumer');
@@ -132,7 +195,7 @@ function initProducerConsumer() {
         }
     }
 
-    // --- Event Listeners ---
+    // --- Event Listeners (Unchanged) ---
     document.getElementById('pc-add-producer').addEventListener('click', () => {
         producerId++;
         const actorEl = addActorToQueue('producer', producerId, producerQueueEl);
@@ -171,7 +234,7 @@ function initProducerConsumer() {
 
 
 // ===================================================================
-// === 2. READER-WRITER SIMULATION ===================================
+// === 2. READER-WRITER SIMULATION (Refactored) ======================
 // ===================================================================
 function initReaderWriter() {
     const logBox = document.getElementById('rw-log');
@@ -186,7 +249,7 @@ function initReaderWriter() {
     let actorId = 0;
     let queue = [];
 
-    // --- UI Update Functions ---
+    // --- UI Update Functions (Unchanged) ---
     function updateSemaphores() {
         semWrtEl.textContent = wrt;
         semRcEl.textContent = readCount;
@@ -209,7 +272,6 @@ function initReaderWriter() {
         actorEl.textContent = `${actor.type === 'reader' ? 'Reader' : 'Writer'} ${actor.id} (Inside)`;
         actorEl.id = `actor-${actor.id}`;
         
-        // Remove "EMPTY" text if it's the first one
         const emptyEl = resourceEl.querySelector('span');
         if (emptyEl) emptyEl.remove();
 
@@ -220,28 +282,25 @@ function initReaderWriter() {
         const actorEl = document.getElementById(`actor-${actor.id}`);
         if (actorEl) actorEl.remove();
 
-        // Add "EMPTY" text if it's now empty
         if (resourceEl.children.length === 0) {
             resourceEl.innerHTML = '<span>EMPTY</span>';
         }
     }
     
-    // --- Simulation Logic ---
+    // --- Simulation Logic (Refactored) ---
     async function processQueue() {
         if (queue.length === 0) return;
 
-        // Process all waiting readers first (Reader Priority)
         while (queue.length > 0 && queue[0].type === 'reader') {
-            if (wrt === 1) { // Only if a writer isn't active
+            if (wrt === 1) { 
                 const actor = queue.shift();
                 renderQueue();
                 readerLogic(actor);
             } else {
-                break; // A writer is active, readers must wait
+                break; 
             }
         }
         
-        // Process a writer if it's at the front and resource is free
         if (queue.length > 0 && queue[0].type === 'writer') {
             if (wrt === 1 && readCount === 0) {
                 const actor = queue.shift();
@@ -254,31 +313,29 @@ function initReaderWriter() {
     async function readerLogic(actor) {
         logMessage(logBox, `Reader ${actor.id}: Trying to enter...`, 'log-reader');
         
-        // wait(mutex)
-        while (mutex <= 0) await sleep(50);
+        // Use smartWait instead of busy-wait loop
+        await smartWait(() => mutex > 0, logBox, `Reader ${actor.id}: Waiting for mutex (to increment rc)`, 'log-reader');
         mutex--;
         
         readCount++;
         if (readCount === 1) {
             logMessage(logBox, `Reader ${actor.id}: First reader, locking 'wrt' for writers.`, 'log-reader');
-            while(wrt <= 0) await sleep(50); // wait(wrt)
+            await smartWait(() => wrt > 0, logBox, `Reader ${actor.id}: Waiting for 'wrt'`, 'log-reader');
             wrt--;
         }
         updateSemaphores();
         
-        // signal(mutex)
         mutex++;
         
         // --- Critical Section (Reading) ---
         logMessage(logBox, `Reader ${actor.id}: ENTERED resource.`, 'log-reader');
         addToResource(actor);
-        await sleep(2000 + Math.random() * 2000); // Reading time
+        await sleep(2000 + Math.random() * 2000); // Use enhanced sleep
         removeFromResource(actor);
         logMessage(logBox, `Reader ${actor.id}: LEFT resource.`, 'log-reader');
         // --- End Critical Section ---
 
-        // wait(mutex)
-        while (mutex <= 0) await sleep(50);
+        await smartWait(() => mutex > 0, logBox, `Reader ${actor.id}: Waiting for mutex (to decrement rc)`, 'log-reader');
         mutex--;
         
         readCount--;
@@ -288,7 +345,6 @@ function initReaderWriter() {
         }
         updateSemaphores();
         
-        // signal(mutex)
         mutex++;
         
         processQueue(); // Check queue again
@@ -297,27 +353,25 @@ function initReaderWriter() {
     async function writerLogic(actor) {
         logMessage(logBox, `Writer ${actor.id}: Trying to enter...`, 'log-writer');
 
-        // wait(wrt)
-        while(wrt <= 0) await sleep(50);
+        await smartWait(() => wrt > 0, logBox, `Writer ${actor.id}: Waiting for 'wrt'`, 'log-writer');
         wrt--;
         updateSemaphores();
         
         // --- Critical Section (Writing) ---
         logMessage(logBox, `Writer ${actor.id}: ENTERED resource.`, 'log-writer');
         addToResource(actor);
-        await sleep(3000 + Math.random() * 2000); // Writing time
+        await sleep(3000 + Math.random() * 2000); // Use enhanced sleep
         removeFromResource(actor);
         logMessage(logBox, `Writer ${actor.id}: LEFT resource.`, 'log-writer');
         // --- End Critical Section ---
         
-        // signal(wrt)
         wrt++;
         updateSemaphores();
         
         processQueue(); // Check queue again
     }
 
-    // --- Event Listeners ---
+    // --- Event Listeners (Unchanged) ---
     document.getElementById('rw-add-reader').addEventListener('click', () => {
         actorId++;
         queue.push({ id: actorId, type: 'reader' });
@@ -335,7 +389,7 @@ function initReaderWriter() {
 
 
 // ===================================================================
-// === 3. DINING PHILOSOPHERS SIMULATION =============================
+// === 3. DINING PHILOSOPHERS SIMULATION (Refactored) ================
 // ===================================================================
 function initDiningPhilosophers() {
     const logBox = document.getElementById('dp-log');
@@ -346,8 +400,11 @@ function initDiningPhilosophers() {
     const STATE = { THINKING: 0, HUNGRY: 1, EATING: 2 };
     let philosopherStates = [STATE.THINKING, STATE.THINKING, STATE.THINKING, STATE.THINKING, STATE.THINKING];
     let chopstickStates = [0, 0, 0, 0, 0]; // 0 = free, 1 = taken
-    let simInterval = null;
+    
+    // Replace interval with a running flag
+    let isDpRunning = false;
 
+    // --- UI Update Functions (Unchanged) ---
     function updateUI() {
         philosophers.forEach((p, i) => {
             p.classList.remove('thinking', 'hungry', 'eating');
@@ -376,6 +433,7 @@ function initDiningPhilosophers() {
         logMessage(logBox, `P${p}: ${message}`, type);
     }
 
+    // --- Logic (Refactored to be async) ---
     async function philosopherLogic(p) {
         // P changes from Thinking to Hungry
         if (philosopherStates[p] === STATE.THINKING) {
@@ -393,27 +451,24 @@ function initDiningPhilosophers() {
             let firstStick = left;
             let secondStick = right;
             
-            // Solution: Asymmetric pickup. P4 picks up right, then left.
             if (useSolution && p === 4) {
                 firstStick = right;
                 secondStick = left;
             }
 
-            if (chopstickStates[firstStick] === 0) { // Try to pick up first stick
+            if (chopstickStates[firstStick] === 0) {
                 chopstickStates[firstStick] = 1;
                 logState(p, `picked up C${firstStick}`, 'log-system');
                 
-                await sleep(500); // Small delay to encourage deadlock
+                await sleep(500); // Use enhanced sleep
 
-                if (chopstickStates[secondStick] === 0) { // Try to pick up second stick
+                if (chopstickStates[secondStick] === 0) {
                     chopstickStates[secondStick] = 1;
                     logState(p, `picked up C${secondStick}`, 'log-system');
                     
-                    // EAT
                     philosopherStates[p] = STATE.EATING;
                     logState(p, 'is now EATING', 'log-eating');
                 } else {
-                    // Failed to get second stick, put down first
                     chopstickStates[firstStick] = 0;
                     logState(p, `couldn't get C${secondStick}, put down C${firstStick}`, 'log-system');
                 }
@@ -436,7 +491,6 @@ function initDiningPhilosophers() {
     }
     
     function checkDeadlock() {
-        // Deadlock = all are hungry and all chopsticks are taken
         const allHungry = philosopherStates.every(s => s === STATE.HUNGRY);
         const allSticksTaken = chopstickStates.every(s => s === 1);
         if (allHungry && allSticksTaken) {
@@ -444,29 +498,38 @@ function initDiningPhilosophers() {
         }
     }
     
+    // --- Event Listeners (Refactored) ---
     function stopSim() {
-        if (simInterval) {
-            clearInterval(simInterval);
-            simInterval = null;
-            logMessage(logBox, 'Simulation Stopped', 'log-system');
-        }
+        isDpRunning = false; // Just set the flag
+        logMessage(logBox, 'Simulation Stopping...', 'log-system');
     }
     
-    document.getElementById('dp-start').addEventListener('click', () => {
-        if (simInterval) return; // Already running
-        
+    document.getElementById('dp-start').addEventListener('click', async () => {
+        if (isDpRunning) return; // Already running
+        isDpRunning = true;
         logMessage(logBox, 'Simulation Started', 'log-system');
-        simInterval = setInterval(() => {
-            const p = Math.floor(Math.random() * 5); // Pick a random philosopher
-            philosopherLogic(p);
+
+        // Main simulation loop
+        while (isDpRunning) {
+            // Pick a random philosopher to attempt an action
+            const p = Math.floor(Math.random() * 5); 
+            await philosopherLogic(p); // Run their logic
             updateUI();
             
             // Check for deadlock slightly after
-            setTimeout(checkDeadlock, 50); 
-        }, 1000); // Action every 1 second
+            await sleep(50); // Small delay
+            checkDeadlock();
+            
+            // Wait for the next "tick"
+            // This enhanced sleep respects pause/speed controls
+            await sleep(1000); 
+        }
+        logMessage(logBox, 'Simulation Stopped', 'log-system');
+        isDpRunning = false; // Ensure it's marked as stopped
     });
     
     document.getElementById('dp-stop').addEventListener('click', stopSim);
+    
     solutionToggle.addEventListener('change', () => {
         logMessage(logBox, `Solution ${solutionToggle.checked ? 'ENABLED' : 'DISABLED'}.`, 'log-system');
         // Reset state
@@ -479,7 +542,7 @@ function initDiningPhilosophers() {
 
 
 // ===================================================================
-// === 4. SLEEPING BARBER SIMULATION =================================
+// === 4. SLEEPING BARBER SIMULATION (Refactored) ====================
 // ===================================================================
 function initSleepingBarber() {
     const logBox = document.getElementById('sb-log');
@@ -497,8 +560,8 @@ function initSleepingBarber() {
     let customerId = 0;
     let waitingRoom = [];
     
+    // --- UI Update Functions (Unchanged) ---
     function updateUI() {
-        // Update barber
         if (barberReady === 0 && customers === 0) {
             barberEl.textContent = 'Zzz...';
             barberEl.classList.add('sleeping');
@@ -509,14 +572,12 @@ function initSleepingBarber() {
             barberEl.classList.add('working');
         }
         
-        // Update waiting room
         waitingChairs.forEach((chair, i) => {
             const customer = waitingRoom[i];
             chair.classList.toggle('filled', !!customer);
             chair.textContent = customer ? `C${customer.id}` : '';
         });
         
-        // Update queue
         queueEl.innerHTML = '';
         customerQueue.forEach(cust => {
             const el = document.createElement('div');
@@ -526,31 +587,22 @@ function initSleepingBarber() {
         });
     }
     
+    // --- Logic (Refactored) ---
     async function barberLogic() {
         while (true) {
-            if (customers === 0) {
-                // wait(customers) -> sleep
-                barberReady = 0;
-                logMessage(logBox, 'Barber: No customers, going to sleep.', 'log-barber');
-                updateUI();
-                while(customers === 0) await sleep(100); // Sleep until a customer arrives
-                
-                // Woken up
-                // wait(mutex)
-                while(mutex <= 0) await sleep(50);
-                mutex--;
-            } else {
-                // wait(mutex)
-                while(mutex <= 0) await sleep(50);
-                mutex--;
-            }
+            // Use smartWait instead of busy-wait
+            await smartWait(() => customers > 0, logBox, 'Barber: No customers, going to sleep...', 'log-barber');
+            
+            // Woken up
+            await smartWait(() => mutex > 0, logBox, 'Barber: Waiting for mutex', 'log-barber');
+            mutex--;
             
             // --- Critical Section ---
             customers--;
             // --- End Critical Section ---
             
             barberReady = 1; // signal(barberReady)
-            signal('mutex'); // signal(mutex)
+            mutex++; // signal(mutex)
             
             // --- Cut Hair ---
             const customer = waitingRoom.shift();
@@ -559,11 +611,12 @@ function initSleepingBarber() {
             logMessage(logBox, `Barber: Cutting hair for C${customer.id}`, 'log-barber');
             updateUI();
             
-            await sleep(3000 + Math.random() * 2000); // Cutting hair
+            await sleep(3000 + Math.random() * 2000); // Use enhanced sleep
             
             barberChairEl.textContent = 'Empty';
             barberChairEl.classList.remove('filled');
             logMessage(logBox, `Barber: Finished with C${customer.id}`, 'log-barber');
+            barberReady = 0; // Barber is ready for next customer (or to sleep)
             updateUI();
             
             // Move customer from outside queue to waiting room
@@ -580,30 +633,26 @@ function initSleepingBarber() {
         customerQueue.push(customer);
         updateUI();
         
-        // wait(mutex)
-        while(mutex <= 0) await sleep(50);
+        await smartWait(() => mutex > 0, logBox, `C${customer.id}: Waiting for mutex`, 'log-customer');
         mutex--;
         
         if (customers < MAX_CHAIRS) {
             customers++;
             
-            // Add to waiting room UI
             waitingRoom.push(customerQueue.shift());
             logMessage(logBox, `C${customer.id}: Enters waiting room.`, 'log-customer');
             
-            // signal(customers) -> wake barber if sleeping
-            // (handled by barberLogic checking `customers > 0`)
+            // signal(customers) -> (Wakes barber)
             
-            signal('mutex'); // signal(mutex)
+            mutex++; // signal(mutex)
             
-            // wait(barberReady)
-            while(barberReady <= 0) await sleep(100);
+            await smartWait(() => barberReady > 0, logBox, `C${customer.id}: Waiting for barber to be ready`, 'log-customer');
             
             // (customer is now served by barber)
             
         } else {
             // Shop full
-            signal('mutex'); // signal(mutex)
+            mutex++; // signal(mutex)
             logMessage(logBox, `C${customer.id}: Waiting room full, leaving!`, 'log-customer');
             customerQueue.shift();
         }

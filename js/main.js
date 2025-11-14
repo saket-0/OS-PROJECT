@@ -1,6 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
     
     // --- Navigation ---
+
+    const pauseButton = document.getElementById('global-pause-resume');
+    const speedSlider = document.getElementById('global-speed-slider');
+    const speedLabel = document.getElementById('speed-label');
+
+    if (pauseButton && speedSlider && speedLabel) {
+        pauseButton.addEventListener('click', () => {
+            // These functions are defined in simulations.js
+            togglePauseSimulation(); 
+            
+            if (simState.isPaused) {
+                pauseButton.textContent = 'Resume';
+                pauseButton.classList.add('paused');
+            } else {
+                pauseButton.textContent = 'Pause';
+                pauseButton.classList.remove('paused');
+            }
+        });
+
+        speedSlider.addEventListener('input', (e) => {
+            const speed = e.target.value;
+            // This function is defined in simulations.js
+            setSimulationSpeed(speed); 
+            speedLabel.textContent = parseFloat(speed).toFixed(1);
+        });
+    }
+    // --- END SNIPPET ---
+
     const navButtons = document.querySelectorAll('.nav-button');
     const pages = document.querySelectorAll('.simulation-page');
 

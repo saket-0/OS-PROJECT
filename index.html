@@ -8,11 +8,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
     <header class="header">
         <h1>Semaphore Simulation Suite</h1>
+
+        <div class="global-controls">
+            <button id="global-pause-resume" title="Pause/Resume">Pause</button>
+            <label for="global-speed-slider">Speed: <span id="speed-label">1.0</span>x</label>
+            <input type="range" id="global-speed-slider" min="0.1" max="3.0" value="1.0" step="0.1">
+        </div>
         <nav class="main-nav">
             <button class="nav-button active" data-page="intro">Mutex vs. Semaphore</button>
             <button class="nav-button" data-page="producer-consumer">Producer-Consumer</button>
