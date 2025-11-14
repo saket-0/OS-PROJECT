@@ -315,14 +315,14 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 /* --- Page 5: Sleeping Barber --- */
 .sim-container-sb {
-    /* UPDATED: Converted to a 3-column grid */
+    /* This is correct */
     display: grid;
     grid-template-columns: 1fr 1.5fr 1.5fr;
     gap: 24px;
     align-items: start;
 }
 .barber-shop {
-    /* UPDATED: Set height and direction to fill grid cell */
+    /* This is correct */
     height: 450px;
     display: flex;
     flex-direction: column;
@@ -330,12 +330,18 @@ input:checked + .slider:before { transform: translateX(22px); }
     border: 1px solid var(--color-border);
     padding: 20px;
     border-radius: 8px;
+    box-sizing: border-box; /* Add box-sizing */
 }
-.barber-area { text-align: center; }
+.barber-area { 
+    text-align: center; 
+    flex-shrink: 0; /* Prevent this from shrinking */
+}
 .waiting-area { 
-    flex: 1; /* Allow waiting area to fill space */
+    flex: 1; /* Allow waiting area to fill remaining space */
     display: flex;
     flex-direction: column;
+    gap: 10px; /* Add gap between h3 and waiting room */
+    min-height: 0; /* CRUCIAL FIX for flex children */
 }
 .queue-area-sb { flex: 1; }
 .barber-status {
@@ -374,26 +380,44 @@ input:checked + .slider:before { transform: translateX(22px); }
     font-weight: 500;
     flex-shrink: 0; /* Prevent chairs from shrinking */
 }
-#sb-barber-chair { height: 50px; font-weight: 600; }
+#sb-barber-chair { 
+    height: 50px; 
+    font-weight: 600; 
+    margin-bottom: 0; /* Remove margin-bottom from this specific chair */
+}
 #sb-barber-chair.filled, .waiting-area .chair.filled {
     background-color: var(--color-yellow-light);
     border-color: var(--color-yellow);
 }
-/* UPDATED: Set height to match grid cell and allow scrolling */
 #sb-queue {
+    /* This is correct */
     height: 450px;
     overflow-y: auto;
     background-color: var(--color-bg);
     border: 1px solid var(--color-border);
     padding: 10px;
     border-radius: 8px;
+    box-sizing: border-box; /* Add box-sizing */
 }
+
+/* === THE FIX === */
 #sb-waiting-room {
-    /* UPDATED: Make chairs fill the waiting area */
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+    flex: 1; /* Make it fill the .waiting-area */
+    min-height: 0; /* Allow it to shrink to fit */
+    overflow-y: auto; /* Add scrolling *here* */
+    
+    /* Re-style it to look like the other scroll boxes */
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    padding: 10px;
+    border-radius: 8px;
+    
+    /* Remove old/conflicting styles */
+    height: auto; 
+    display: block; /* No longer needs to be flex */
 }
+/* === END FIX === */
+
 .customer {
     padding: 5px 10px;
     border-radius: 4px;
@@ -427,6 +451,10 @@ input:checked + .slider:before { transform: translateX(22px); }
     }
     .log-box {
         height: 300px; /* Revert to smaller log on smaller screens */
+    }
+    /* Fix for barber shop on smaller screens */
+    #sb-waiting-room {
+        height: 250px;
     }
 }
 

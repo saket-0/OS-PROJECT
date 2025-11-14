@@ -8,8 +8,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="base.css">
-    <link rel="stylesheet" href="simulations.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/intro.css">
+    <link rel="stylesheet" href="css/producer-consumer.css">
+    <link rel="stylesheet" href="css/reader-writer.css">
+    <link rel="stylesheet" href="css/dining-philosophers.css">
+    <link rel="stylesheet" href="css/sleeping-barber.css">
 </head>
 <body>
     <header class="header">
@@ -216,8 +221,7 @@ consumer() {
                         </div>
                         <div class="waiting-area">
                             <h3>Waiting Room (Chairs: 5)</h3>
-                            <div id="sb-waiting-room" class="buffer">
-                                <div class="chair"></div>
+                            <div id="sb-waiting-room" class="actor-queue"> <div class="chair"></div>
                                 <div class="chair"></div>
                                 <div class="chair"></div>
                                 <div class="chair"></div>

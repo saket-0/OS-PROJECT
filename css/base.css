@@ -3,7 +3,6 @@
 /* =================================================================== */
 /* Contains all fundamental styles: variables, resets, and           */
 /* the core page layout (header, sidebar, main content wrapper).       */
-/* You will rarely need to edit this file.                             */
 /* =================================================================== */
 
 /* --- Global Reset & Root Vars --- */
@@ -31,6 +30,11 @@
     --color-purple-light: #f5eff8;
     
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* UPDATED: Added box-sizing */
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
 body {
@@ -72,7 +76,10 @@ h1, h2, h3, h4 {
 
 .content-container {
     flex: 1; /* Make the content area fill the remaining space */
-    overflow-y: auto; /* This is where the main scrolling happens */
+    /* UPDATED: This container is now a flex column */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Page content (like logs) will scroll, not this */
     padding: 30px 40px;
 }
 
@@ -195,7 +202,6 @@ h1 {
         border-right: none;
         border-bottom: 1px solid var(--color-border);
         padding: 15px;
-        box-sizing: border-box;
     }
 
     .main-nav {
@@ -218,6 +224,7 @@ h1 {
     .content-container {
         padding: 20px;
         overflow-y: visible; /* Prevent nested scrollbar */
+        flex: 0 1 auto; /* Don't grow on tablet */
     }
 
     .header {

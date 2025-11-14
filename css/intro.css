@@ -1,0 +1,30 @@
+/* =================================================================== */
+/* === intro.css ===                                               === */
+/* =================================================================== */
+.comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+.comparison-grid .panel {
+    padding: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+}
+.comparison-grid ul {
+    line-height: 1.6;
+}
+.code-snippet {
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    padding: 15px;
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .comparison-grid { 
+        grid-template-columns: 1fr; 
+    }
+}

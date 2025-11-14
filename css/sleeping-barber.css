@@ -1,0 +1,128 @@
+/* =================================================================== */
+/* === sleeping-barber.css ===                                     === */
+/* =================================================================== */
+.sim-container-sb {
+    /* UPDATED: This grid now fills all available vertical space */
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1.5fr;
+    gap: 24px;
+    align-items: stretch;
+    min-height: 0; /* Flexbox fix */
+}
+
+/* --- Column 1: Customer Queue --- */
+.queue-area-sb {
+    display: flex;
+    flex-direction: column;
+}
+.queue-area-sb h3 {
+    margin-bottom: 12px;
+}
+#sb-queue {
+    /* This is an .actor-queue, so it's already 100% flex-grow */
+    flex: 1;
+}
+
+/* --- Column 2: Barber Shop --- */
+.barber-shop {
+    /* UPDATED: This is now a flex column */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    
+    border: 1px solid var(--color-border);
+    padding: 20px;
+    border-radius: 8px;
+    min-height: 0; /* Flexbox fix */
+}
+.barber-area { 
+    text-align: center; 
+    flex-shrink: 0; /* Don't shrink barber area */
+}
+.waiting-area { 
+    /* UPDATED: This area fills the remaining space */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Flexbox fix */
+}
+.waiting-area h3 {
+    margin-bottom: 12px;
+    flex-shrink: 0;
+}
+#sb-waiting-room {
+    /* This is an .actor-queue, so it will grow to fill .waiting-area */
+    flex: 1;
+}
+
+/* --- Barber Status & Chairs --- */
+.barber-status {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto 20px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+.barber-status.sleeping {
+    background-color: var(--color-primary-light);
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary-dark);
+}
+.barber-status.working {
+    background-color: var(--color-green-light);
+    border: 2px solid var(--color-green);
+    color: var(--color-green);
+}
+.chair {
+    height: 40px;
+    background-color: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    flex-shrink: 0; /* Prevent chairs from shrinking */
+}
+#sb-barber-chair { 
+    height: 50px; 
+    font-weight: 600; 
+}
+#sb-barber-chair.filled, .waiting-area .chair.filled {
+    background-color: var(--color-yellow-light);
+    border-color: var(--color-yellow);
+}
+.customer {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    background-color: var(--color-yellow-light);
+}
+
+/* --- Responsive --- */
+@media (max-width: 1200px) {
+    .sim-container-sb {
+        grid-template-columns: 1fr;
+        flex: 0 1 auto; /* Don't grow */
+    }
+    .barber-shop {
+        /* Give it a reasonable height when stacked */
+        height: 500px;
+    }
+}
+@media (max-width: 768px) {
+    .barber-shop {
+        height: auto;
+        min-height: 400px;
+    }
+}

@@ -1,0 +1,182 @@
+/* =================================================================== */
+/* === common.css ===                                              === */
+/* =================================================================== */
+/* Contains all styles shared across simulation pages.               */
+/* =================================================================== */
+
+
+/* --- Main Page Layout --- */
+.simulation-page {
+    display: none; /* This hides the page by default */
+    background-color: var(--color-panel);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--shadow);
+    max-width: 1400px; 
+    
+    /* --- THE BUG WAS HERE --- */
+    /* I incorrectly had 'display: flex;' here, overriding 'display: none;' */
+    
+    /* These rules apply ONLY when the page is active */
+    flex: 1;
+    flex-direction: column;
+    min-height: 0; /* Flexbox fix */
+}
+.simulation-page.active {
+    display: flex; /* This shows the active page as a flex column */
+}
+.simulation-page h2 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 16px;
+    flex-shrink: 0; /* Prevent title from shrinking */
+}
+
+/* --- Shared Controls --- */
+.sim-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+    flex-shrink: 0; /* Prevent controls from shrinking */
+}
+.sim-controls button {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 8px 16px;
+    border: 1px solid var(--color-primary);
+    background-color: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.sim-controls button:hover {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+/* --- Shared Logging --- */
+.log-area, .log-area-dp {
+    /* UPDATED: This is now a flex column */
+    display: flex;
+    flex-direction: column;
+    min-width: 280px;
+    flex-basis: 300px;
+    flex-grow: 1;
+    min-height: 0; /* Flexbox fix */
+}
+.log-area h3, .log-area-dp h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+}
+.log-box {
+    /* UPDATED: Log box now fills all available vertical space */
+    flex: 1;
+    height: auto; /* Remove fixed height */
+    min-height: 200px; /* Set a minimum */
+    
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 15px;
+    overflow-y: auto;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+.log-box div {
+    padding-bottom: 4px;
+    border-bottom: 1px dashed var(--color-border);
+    margin-bottom: 4px;
+}
+.log-box .log-producer { color: var(--color-green); }
+.log-box .log-consumer { color: var(--color-red); }
+.log-box .log-reader { color: var(--color-primary); }
+.log-box .log-writer { color: var(--color-red); }
+.log-box .log-barber { color: var(--color-purple); }
+.log-box .log-customer { color: var(--color-text-light); }
+.log-box .log-system { color: var(--color-text-light); font-style: italic; }
+.log-box .log-eating { color: var(--color-green); }
+.log-box .log-hungry { color: var(--color-yellow); }
+.log-box .log-thinking { color: var(--color-text-light); }
+.log-box .log-deadlock { color: var(--color-red); font-weight: bold; text-transform: uppercase; }
+
+/* --- Shared Semaphore Grids --- */
+.semaphore-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+    flex-shrink: 0;
+}
+.sem-display {
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+.sem-display span {
+    font-weight: 700;
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    color: var(--color-primary-dark);
+}
+
+/* --- Shared Actor Styles --- */
+.actor-queue {
+    /* UPDATED: This is now a flex column that fills space */
+    flex: 1;
+    min-height: 150px;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    padding: 10px;
+    border-radius: 8px;
+    overflow-y: auto;
+}
+.actor {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    opacity: 0.5;
+    transition: all 0.3s ease;
+}
+.actor.producer { background-color: var(--color-green-light); }
+.actor.consumer { background-color: var(--color-red-light); }
+.actor.reader { background-color: var(--color-primary-light); color: var(--color-primary-dark); }
+.actor.writer { background-color: var(--color-red-light); color: var(--color-red); }
+.actor.waiting { opacity: 1; }
+
+/* --- Shared Toggle Switch --- */
+.toggle-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--color-border); border-radius: 28px; transition: .4s;
+}
+.slider:before {
+    position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px;
+    background-color: white; border-radius: 50%; transition: .4s;
+}
+input:checked + .slider { background-color: var(--color-primary); }
+input:checked + .slider:before { transform: translateX(22px); }
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 900px) {
+    .simulation-page { 
+        padding: 20px;
+        flex: 0 1 auto; /* Don't grow on tablet */ 
+    }
+}
+@media (max-width: 768px) {
+    .simulation-page { 
+        padding: 20px 15px;
+    }
+}
