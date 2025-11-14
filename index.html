@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPU Scheduler Pro (v2.0)</title>
+    
+    <!-- Import Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Link to new modular CSS files -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="components.css">
+    
+    <!-- Import Chart.js for graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <h1>CPU Scheduler Pro</h1>
+
+    <div class="main-container">
+        
+        <!-- ====== LEFT PANEL: CONFIGURATION ====== -->
+        <div class="panel config-panel">
+            <h2>Configuration</h2>
+            
+            <div class="input-group">
+                <label for="algorithm">Select Algorithm:</label>
+                <select id="algorithm">
+                    <option value="fcfs">First-Come, First-Served (FCFS)</option>
+                    <option value="sjf">Shortest Job First (SJF) (Non-Preemptive)</option>
+                    <option value="rr">Round Robin (RR)</option>
+                </select>
+            </div>
+
+            <div class="input-group" id="quantum-input">
+                <label for="quantum">Time Quantum (for RR):</label>
+                <input type="number" id="quantum" value="2" min="1">
+            </div>
+            
+            <div class="input-group">
+                <label>Simulation Speed:</label>
+                <input type="range" id="speed-slider" min="10" max="1000" value="200" step="10">
+            </div>
+
+            <div class="input-group">
+                <label>Add Process:</label>
+                <div class="process-inputs">
+                    <input type="number" id="arrival-time" placeholder="Arrival Time" min="0">
+                    <input type="number" id="burst-time" placeholder="Burst Time" min="1">
+                </div>
+                <button id="add-process-btn">Add Process</button>
+            </div>
+
+            <div class="button-group">
+                <button id="run-btn">Run Simulation</button>
+                <button id="reset-btn">Reset</button>
+            </div>
+
+            <div id="process-list-container">
+                <h3>Process List</h3>
+                <table id="process-table">
+                    <thead>
+                        <tr><th>PID</th><th>Arrival</th><th>Burst</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ====== RIGHT PANEL: VISUALIZATION ====== -->
+        <div class="viz-panel">
+            
+            <!-- Live Simulation -->
+            <div class="panel">
+                <h2>Live Simulation</h2>
+                <div id="live-sim-panel">
+                    <div class="sim-box">
+                        <h4>Current Time</h4>
+                        <span id="current-time">0</span>
+                    </div>
+                    <div class="sim-box">
+                        <h4>CPU</h4>
+                        <span class="pid-box" id="cpu-box">IDLE</span>
+                    </div>
+                    <div class="sim-box">
+                        <h4>Ready Queue</h4>
+                        <div id="ready-queue-box"></div>
+                    </div>
+                    <div class="sim-box">
+                        <h4>Completed</h4>
+                        <div id="completed-box"></div>
+                    </div>
+                </div>
+                <!-- Gantt Chart -->
+                <div id="gantt-chart-container">
+                    <label>Gantt Chart:</label>
+                    <div id="gantt-chart">
+                         <div id="gantt-chart-inner" class="gantt-block-wrapper"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results & Stats -->
+            <div class="panel">
+                <h2>Results & Statistics</h2>
+                <div id="results-table-container">
+                    <table id="results-table">
+                        <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>Arrival</th>
+                                <th>Burst</th>
+                                <th>Completion</th>
+                                <th>Turnaround</th>
+                                <th>Waiting</th>
+                                <th>Response</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div id="summary-stats">
+                    <div class="stat-card">
+                        <h4>Avg. Waiting</h4>
+                        <p id="avg-waiting-time">-</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Avg. Turnaround</h4>
+                        <p id="avg-turnaround-time">-</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>CPU Utilization</h4>
+                        <p id="cpu-utilization">-</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Throughput</h4>
+                        <p id="throughput">-</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Comparison Graph -->
+            <div class="panel">
+                <h2>Algorithm Comparison</h2>
+                <div id="chart-container">
+                    <canvas id="comparison-chart"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 
+      Load our modularized JavaScript files.
+      The order is important!
+    -->
+    <script src="js/scheduler.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+</html>
